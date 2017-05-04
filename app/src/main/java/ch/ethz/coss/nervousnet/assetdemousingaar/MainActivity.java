@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements RemoteCallback {
             @Override
             public void onClick(View v) {
 
+                //Check if Nervousnet Service is running
                 if(nn_VM.getNervousnetState() == NervousnetVMConstants.STATE_RUNNING) {
                     // get selected radio button from radioGroup
                     int selectedId = radioSurvey.getCheckedRadioButtonId();
@@ -99,12 +100,7 @@ public class MainActivity extends AppCompatActivity implements RemoteCallback {
                     radioButton = (RadioButton) findViewById(selectedId);
 
 
-//                    try {
-//                        nervousnetServiceController.getLatestReading(10002);
-//                    } catch (RemoteException e) {
-//                        e.printStackTrace();
-//                    }
-
+                    //Nervousnet Survey Sensor parameter names.
                     String [] params = new String[] {
                             "surveyID",
                             "qID",
@@ -117,8 +113,10 @@ public class MainActivity extends AppCompatActivity implements RemoteCallback {
                             "chosenAnswer"
                     };
                     ArrayList<String> paramNames = new ArrayList<String>(Arrays.asList(params));
+                    //Survey Object id = 10002 for the sensor. Name = SurveySensor.
                     SensorReading surveyReading = new SensorReading(10002, "SurveySensor", paramNames);
 
+                    //Survey Object values Survey ID and Questions ID modify accodingly. Type parameter keep as 1 now.
                     String [] values = new String[] {
                             "survey-id-1",
                             "question-id-1",
@@ -133,8 +131,11 @@ public class MainActivity extends AppCompatActivity implements RemoteCallback {
 
                     values[values.length-1] = ""+radioButton.getText();
                     ArrayList<String> valuesList = new ArrayList<String>(Arrays.asList(values));
+
+                    //Set the values onto the survey reading object
                     surveyReading.setValues(valuesList);
 
+                    //Write to database
                         nn_VM.store(surveyReading);
                         Toast.makeText(MainActivity.this,
                                 "Written to database", Toast.LENGTH_SHORT).show();
@@ -157,9 +158,7 @@ public class MainActivity extends AppCompatActivity implements RemoteCallback {
 
             @Override
             public void onClick(View v) {
-                // Fetch reading from database.
-
-
+                // Fetch survey reading from database. Result will bein Callback methods success or failure.
                 try {
                     nn_VM.getReading((long)10002, MainActivity.this);
                 } catch (NoSuchElementException e) {
